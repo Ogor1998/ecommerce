@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 const DAY = 1000 * 60 * 60 * 24
 
-module.exports.sendToken = (req, user) => {
-    const token = jwt.sign({ userId: user._id }, process.env.SECRET,
+module.exports.sendToken = (res, user) => {
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     )
 

@@ -9,9 +9,11 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+
 const AppError = require('./utils/AppError');
 const { isLoggedIn } = require('./middleware/auth');
-const catchAsync = require('./utils/catchAsync');
+const { catchAsync } = require('./utils/catchAsync');
 const User = require('./models/User');
 
 
@@ -31,7 +33,10 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
+
+
 app.use('/', userRoutes)
+app.use('/product', productRoutes)
 
 
 app.get('/check-auth', isLoggedIn, catchAsync(async (req, res) => {
@@ -42,10 +47,6 @@ app.get('/check-auth', isLoggedIn, catchAsync(async (req, res) => {
     })
 }))
 
-app.all(/(.*)/, (req, res, next) => {
-    next(new AppError('Page not found', 404))
-})
-
 
 app.post('/logout', async (req, res) => {
     res.clearCookie('token')
@@ -54,7 +55,44 @@ app.post('/logout', async (req, res) => {
     })
 })
 
+app.all(/(.*)/, (req, res, next) => {
+    next(new AppError('Page not found', 404))
+})
 
+app.use((err, req, res, next) => {
+
+    console.error(err); // ← log full error server-side for debugging
+
+    // Invalid MongoDB ObjectId
+
+
+    if (err.name === "CastError") {
+        return res.status(400).json({
+            message: `Invalid ID: ${err.value} is not a valid ID`
+        });
+    }
+
+    // Mongoose validation errors (missing required fields, etc)
+    if (err.name === "ValidationError") {
+        const messages = Object.values(err.errors).map(e => e.message);
+        return res.status(400).json({ message: messages.join(", ") });
+    }
+
+    // Duplicate key error (e.g. unique email/username already exists)
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyValue)[0];
+        return res.status(409).json({ message: `${field} already exists` });
+    }
+
+
+    // Multer file upload errors
+    if (err.name === "MulterError") {
+        return res.status(400).json({ message: err.message });
+    }
+
+    const { statusCode = 500, message = 'something went wrong' } = err;
+    res.status(statusCode).json({ statusCode, message })
+})
 
 
 app.listen(port, () => {

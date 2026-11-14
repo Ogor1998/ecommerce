@@ -6,14 +6,15 @@ const { isLoggedIn } = require('../middleware/auth')
 
 
 module.exports.register = async (req, res) => {
-    const { firstname, lastname, username, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 30)
+    const { firstname, lastname, username, email, password, role } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10)
     const user = new User({
         firstname,
         lastname,
         username,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role
     })
 
     await user.save();
@@ -23,6 +24,7 @@ module.exports.register = async (req, res) => {
 
     res.json({
         message: 'User Registered Successfully',
+        isLoggedIn: true,
         user: safeUser
     })
 }
@@ -44,6 +46,7 @@ module.exports.login = async (req, res) => {
             isLoggedIn: false
         })
     }
+    console.log('this is user', user)
     sendToken(res, user)
 
     res.json({
@@ -55,3 +58,4 @@ module.exports.login = async (req, res) => {
         }
     })
 }
+
