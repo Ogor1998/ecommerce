@@ -11,7 +11,7 @@ module.exports.isAdmin = async (req, res) => {
         })
     }
     if (user.role !== 'admin') {
-        return res.status(401).json({
+        return res.status(403).json({
             message: 'You do not have permission to do that'
         })
     }

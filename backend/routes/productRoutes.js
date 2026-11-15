@@ -1,11 +1,13 @@
 const express = require('express')
 const router = express.Router();
-const { createProduct, updateProduct, softDeleteProduct } = require('../controllers/Products');
+const { createProduct, updateProduct, softDeleteProduct, allProducts } = require('../controllers/Products');
 const { catchAsync } = require('../utils/catchAsync');
-const { isAdmin } = require('../middleware/middleware')
+const { isAdmin, validateProduct } = require('../middleware/middleware')
 const { isLoggedIn } = require('../middleware/auth')
+const { upload } = require('../cloudinary')
 
-router.post('/new', catchAsync(createProduct))
+router.get('/products', catchAsync(allProducts))
+router.post('/new', upload.array('images', 10), validateProduct, catchAsync(createProduct))
 router.patch('/update/:id', catchAsync(updateProduct))
 router.post('/delete/:id', catchAsync(softDeleteProduct))
 

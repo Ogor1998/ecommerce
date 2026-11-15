@@ -1,6 +1,29 @@
 const Product = require('../models/Product')
+const { uploadToCloudinary } = require('../cloudinary')
 
+module.exports.allProducts = async (req, res) => {
+    const page = Number(req.query.page) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
 
+    const products = await Product.find({})
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+    if (products.length === 0) {
+        return res.status(404).json({
+            message: 'No products found'
+        })
+    }
+    console.log('these are the products', products)
+    res.json({
+        products,
+        pagination: {
+            hasMore: (skip + products.length) < total
+        }
+    })
+
+}
 
 module.exports.createProduct = async (req, res) => {
     const { name, slug, category, price, description, stock, isActive } = req.body;
@@ -13,6 +36,18 @@ module.exports.createProduct = async (req, res) => {
         stock,
         isActive
     })
+
+    if (req.files && req.files.length > 0) {
+
+        const imageUrls = await Promise.all(
+            req.files.map(async (file) => {
+                const result = await uploadToCloudinary(file.buffer);
+                return result.secure_url;
+            })
+        );
+
+        product.images = imageUrls;
+    }
     await product.save();
     console.log('this is the new product', product)
     res.json({
