@@ -6,7 +6,13 @@ const { isAdmin, validateProduct } = require('../middleware/middleware')
 const { isLoggedIn } = require('../middleware/auth')
 const { upload } = require('../cloudinary')
 
-router.get('/products', catchAsync(allProducts))
+
+const newPage = async (req, res) => {
+    return res.json({
+        message: 'This works'
+    })
+}
+router.get('/', catchAsync(allProducts))
 router.post('/new', upload.array('images', 10), validateProduct, catchAsync(createProduct))
 router.patch('/update/:id', catchAsync(updateProduct))
 router.post('/delete/:id', catchAsync(softDeleteProduct))

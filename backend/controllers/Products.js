@@ -15,6 +15,8 @@ module.exports.allProducts = async (req, res) => {
             message: 'No products found'
         })
     }
+
+    const total = products.length;
     console.log('these are the products', products)
     res.json({
         products,

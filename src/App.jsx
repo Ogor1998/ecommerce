@@ -12,7 +12,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path='/home' element={<Home />} />
+        <Route path='/products' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path="*" element={<Navigate to="/error" state={{ statusCode: 404, message: "Page not found" }} replace />} />

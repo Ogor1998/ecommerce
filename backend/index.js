@@ -10,6 +10,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 const AppError = require('./utils/AppError');
 const { isLoggedIn } = require('./middleware/auth');
@@ -35,8 +36,9 @@ app.use(cookieParser());
 
 
 
+app.use('/products', productRoutes)
+app.use('/cart', cartRoutes)
 app.use('/', userRoutes)
-app.use('/product', productRoutes)
 
 
 app.get('/check-auth', isLoggedIn, catchAsync(async (req, res) => {
