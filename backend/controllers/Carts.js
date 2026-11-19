@@ -1,26 +1,19 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const { listeners } = require('../models/User');
 
 
 module.exports.addTocart = async (req, res) => {
     const { productId } = req.params;
-    const { price, quantity = 1 } = req.body;
     const product = await Product.findById(productId);
+    // const { price = product.price, quantity = 1 } = req.body;
+    const quantity = 1
     if (!product) {
         return res.status(404).json({
             message: 'Product not found'
         })
     }
-    if (price !== undefined && product.price !== price) {
-        return res.status(400).json({
-            message: 'You have an outdated price'
-        });
-    }
-    if (quantity > product.stock) {
-        return res.status(404).json({
-            message: 'Product out of stock'
-        })
-    }
+
     let cart = await Cart.findOne({ user: req.user.userId })
     if (!cart) {
         cart = new Cart({
@@ -32,19 +25,17 @@ module.exports.addTocart = async (req, res) => {
         })
     } else {
         const existingItem = cart.items.find(
-            (item) => item.product.toString === productId
+            (item) => item.product.toString() === productId
         )
         if (existingItem) {
-            existingItem.quantity += quantity
+            existingItem.quantity = (existingItem.quantity || 0) + quantity;
         } else {
             cart.items.push({ product: productId, quantity });
         }
     }
 
-    // const 
-
-    console.log(cart)
     await cart.save()
+    await cart.populate('items.product', 'name slug price images stock isActive')
     res.json({
         message: 'Item added to card',
         cart
@@ -60,15 +51,16 @@ module.exports.updateQuantity = async (req, res) => {
     }
     const updatedCart = await Cart.findOneAndUpdate(
         { user: req.user.userId, "items.product": productId },
-        { $inc: { "items.$.quantity": quantity } },
-        { new: true }
-    );
+        { $set: { "items.$.quantity": quantity } },
+        { returnDocument: 'after' }
+    ).populate('items.product', 'name slug price images stock isActive')
     if (!updatedCart) {
         return res.status(404).json({
             message: 'Item not found'
         })
     }
 
+    console.log('qunatity updatted')
     res.json({
         message: 'Quantity updated',
         updatedCart
@@ -101,12 +93,12 @@ module.exports.deleteFromCart = async (req, res) => {
 }
 
 module.exports.userCart = async (req, res) => {
-    const cart = await Cart.find({ user: req.user.userId });
+    const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
     if (!cart) {
         res.status(404).json({
             message: 'Your cart is currently empty'
         })
     }
-    console.log(cart.items)
+    // console.log(cart.items)
     res.json(cart)
 }

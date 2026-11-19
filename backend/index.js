@@ -35,6 +35,24 @@ app.use(cors({
 app.use(cookieParser());
 
 
+const cleanPayload = (obj) => {
+    if (!obj || typeof obj !== 'object') return;
+    for (const key of Object.keys(obj)) {
+        if (key.startsWith('$')) {
+            delete obj[key];
+        } else {
+            cleanPayload(obj[key]);
+        }
+    }
+};
+
+app.use((req, res, next) => {
+    cleanPayload(req.body);
+    cleanPayload(req.params);
+    cleanPayload(req.query);
+    next();
+})
+
 
 app.use('/products', productRoutes)
 app.use('/cart', cartRoutes)

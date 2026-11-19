@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const { createProduct, updateProduct, softDeleteProduct, allProducts } = require('../controllers/Products');
+const { createProduct, updateProduct, softDeleteProduct, allProducts, allCategories, findProduct } = require('../controllers/Products');
 const { catchAsync } = require('../utils/catchAsync');
 const { isAdmin, validateProduct } = require('../middleware/middleware')
 const { isLoggedIn } = require('../middleware/auth')
@@ -13,6 +13,9 @@ const newPage = async (req, res) => {
     })
 }
 router.get('/', catchAsync(allProducts))
+router.get('/:slug', catchAsync(findProduct))
+router.get('/categories', catchAsync(allCategories))
+router.get('/shop', catchAsync(allProducts))
 router.post('/new', upload.array('images', 10), validateProduct, catchAsync(createProduct))
 router.patch('/update/:id', catchAsync(updateProduct))
 router.post('/delete/:id', catchAsync(softDeleteProduct))

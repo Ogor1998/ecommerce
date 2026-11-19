@@ -1,88 +1,114 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const Product = require('../models/Product')
+const Product = require('../models/Product'); // Adjust path if needed
 
-const sampleProducts = [
+
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecommerce';
+
+const categories = [
     {
-        name: 'Wireless Mechanical Keyboard',
-        slug: 'wireless-mechanical-keyboard',
-        price: 129.99,
-        description: 'Compact 75% wireless mechanical keyboard with hot-swappable tactile switches and RGB backlighting.',
-        images: [
-            'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800',
-            'https://images.unsplash.com/photo-1595225476474-87563907a212?w=800',
-        ],
-        category: 'Electronics',
-        stock: 42,
-        isActive: true,
+        name: 'Electronics',
+        adjectives: ['Pro', 'Ultra', 'Wireless', 'Smart', 'Compact', 'Studio', '4K', 'Portable', 'Nano', 'Max'],
+        items: ['Mechanical Keyboard', 'Noise-Cancelling Headphones', 'USB-C Hub', '4K Webcam', 'Portable SSD', 'GaN Charger', 'Bluetooth Speaker', 'Gaming Mouse', 'Monitor Light Bar', 'Smartwatch'],
+        priceRange: [29, 349],
+        imageKeyword: 'electronics,gadget',
     },
     {
-        name: 'Ergonomic Mesh Office Chair',
-        slug: 'ergonomic-mesh-office-chair',
-        price: 289.00,
-        description: 'Breathable high-back mesh desk chair with adjustable lumbar support and 3D armrests.',
-        images: [
-            'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?w=800',
-        ],
-        category: 'Furniture',
-        stock: 15,
-        isActive: true,
+        name: 'Apparel',
+        adjectives: ['Heavyweight', 'Essential', 'Relaxed', 'Organic Cotton', 'Tailored', 'Classic', 'Everyday', 'Vintage Wash', 'Lightweight', 'Oversized'],
+        items: ['Hoodie', 'Crewneck Sweatshirt', 'Oxford Shirt', 'Chino Trousers', 'Graphic Tee', 'Denim Jacket', 'Cargo Pants', 'Merino Sweater', 'Linen Shirt', 'Track Jacket'],
+        priceRange: [24, 145],
+        imageKeyword: 'fashion,clothing',
     },
     {
-        name: 'Insulated Stainless Steel Tumbler',
-        slug: 'insulated-stainless-steel-tumbler',
-        price: 24.50,
-        description: 'Double-wall vacuum insulated 24oz travel tumbler that keeps drinks cold for 24 hours.',
-        images: [
-            'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800',
-        ],
-        category: 'Drinkware',
-        stock: 110,
-        isActive: true,
+        name: 'Footwear',
+        adjectives: ['Runner', 'Court', 'Trail', 'Retro', 'Knit', 'Leather', 'Cloud', 'Street', 'Velocity', 'Aero'],
+        items: ['Low-Top Sneakers', 'Running Shoes', 'Chelsea Boots', 'Slip-On Loafers', 'Cross-Trainers', 'High-Top Trainers', 'Canvas Shoes', 'Hiking Boots', 'Slides', 'Derby Shoes'],
+        priceRange: [45, 220],
+        imageKeyword: 'sneakers,shoes',
     },
     {
-        name: 'Minimalist Leather Backpack',
-        slug: 'minimalist-leather-backpack',
-        price: 159.00,
-        description: 'Full-grain water-resistant leather everyday backpack with a padded 16-inch laptop sleeve.',
-        images: [
-            'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800',
-        ],
-        category: 'Accessories',
-        stock: 8,
-        isActive: true,
+        name: 'Home & Living',
+        adjectives: ['Minimalist', 'Ceramic', 'Nordic', 'Handcrafted', 'Matte', 'Bamboo', 'Aroma', 'Woven', 'Linen', 'Walnut'],
+        items: ['Desk Lamp', 'Pour-Over Coffee Maker', 'Throw Blanket', 'Diffuser', 'Wall Clock', 'Storage Basket', 'Planter Pot', 'Insulated Tumbler', 'Table Mirror', 'Candle Set'],
+        priceRange: [18, 160],
+        imageKeyword: 'minimalist,home,decor',
     },
     {
-        name: 'USB-C Multiport Hub Adapter',
-        slug: 'usb-c-multiport-hub-adapter',
-        price: 45.00,
-        description: '7-in-1 aluminum USB-C hub featuring 4K HDMI, 100W Power Delivery, SD card reader, and USB 3.0 ports.',
-        images: [
-            'https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=800',
-        ],
-        category: 'Electronics',
-        stock: 0,
-        isActive: false,
+        name: 'Accessories',
+        adjectives: ['Everyday', 'RFID-Blocking', 'Waterproof', 'Ballistic Nylon', 'Full-Grain Leather', 'Modular', 'Slim', 'Travel', 'Polarized', 'Titanium'],
+        items: ['Crossbody Bag', 'Laptop Backpack', 'Bifold Wallet', 'Sunglasses', 'Tech Pouch', 'Weekender Duffel', 'Key Organizer', 'Watch Strap', 'Cap', 'Tote Bag'],
+        priceRange: [19, 189],
+        imageKeyword: 'backpack,watch,accessories',
     },
 ];
 
-const seedDB = async () => {
+const brands = ['Kova', 'Velo', 'Norr', 'Aether', 'Sola', 'Marrow', 'Loom', 'Tact'];
+const colors = ['Obsidian Black', 'Slate Grey', 'Sandstone', 'Forest Green', 'Navy', 'Chalk White', 'Terracotta', 'Cobalt'];
+
+function slugify(text) {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+}
+
+function generateProducts(count = 200) {
+    const products = [];
+
+    for (let i = 0; i < count; i++) {
+        const cat = categories[i % categories.length];
+        const adj = cat.adjectives[i % cat.adjectives.length];
+        const item = cat.items[Math.floor(i / categories.length) % cat.items.length];
+        const brand = brands[(i * 3) % brands.length];
+        const color = colors[(i * 5) % colors.length];
+
+        const name = `${brand} ${adj} ${item} - ${color}`;
+        const slug = `${slugify(name)}-${i + 1}`;
+
+        const [minPrice, maxPrice] = cat.priceRange;
+        const rawPrice = minPrice + ((i * 17) % (maxPrice - minPrice));
+        const price = Number(`${rawPrice}.99`);
+
+        // Leave ~5% of products out of stock (0) so you can test out-of-stock UI states
+        const stock = i % 20 === 0 ? 0 : ((i * 7) % 65) + 3;
+
+        products.push({
+            name,
+            slug,
+            description: `Engineered for daily durability and clean aesthetics, the ${name} combines premium materials with modern functionality in the ${cat.name} collection.`,
+            price,
+            category: cat.name,
+            images: [
+                `https://picsum.photos/seed/${slug}-1/800/800`,
+                `https://picsum.photos/seed/${slug}-2/800/800`,
+                `https://picsum.photos/seed/${slug}-3/800/800`,
+            ],
+            stock,
+            isActive: true,
+        });
+    }
+
+    return products;
+}
+
+async function seedDB() {
     try {
-        await mongoose.connect(process.env.DB_URL);
-        console.log('Connected to MongoDB for seeding...');
+        await mongoose.connect(MONGO_URI);
+        console.log('Connected to MongoDB');
 
-        // Clear existing products before inserting fresh seed data
         await Product.deleteMany({});
-        console.log('Cleared existing products.');
+        console.log('Cleared existing products');
 
-        const inserted = await Product.insertMany(sampleProducts);
-        console.log(`Seeded ${inserted.length} products successfully.`);
+        const products = generateProducts(200);
+        await Product.insertMany(products);
+        console.log(`Successfully seeded ${products.length} products!`);
     } catch (err) {
         console.error('Seeding failed:', err);
     } finally {
         await mongoose.connection.close();
-        console.log('Database connection closed.');
+        process.exit(0);
     }
-};
+}
 
 seedDB();

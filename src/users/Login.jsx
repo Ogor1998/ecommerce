@@ -90,7 +90,7 @@ export default function Login() {
             if (res.data?.isLoggedIn || res.data?.user) {
                 setIsLoggedIn(true)
                 setCurrentUser(res.data.user)
-                const from = location.state?.from?.pathname || "/boards";
+                const from = location.state?.from?.pathname || "/products/shop";
                 setMessage({
                     text: "Welcome back!",
                     severity: "success",
