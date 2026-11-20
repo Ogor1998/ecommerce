@@ -55,6 +55,7 @@ module.exports.findProduct = async (req, res) => {
 
 module.exports.allCategories = async (req, res) => {
     const categories = await Product.distinct('category', { isActive: true })
+    console.log('this is categories', categories)
     res.json(categories.sort())
 }
 

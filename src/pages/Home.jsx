@@ -19,11 +19,16 @@ import {
     TextField,
     Stack,
     Divider,
+
 } from '@mui/material'
 import LocalShippingOutlined from '@mui/icons-material/LocalShippingOutlined'
 import LockOutlined from '@mui/icons-material/LockOutlined'
 import ReplayOutlined from '@mui/icons-material/ReplayOutlined'
 import SupportAgentOutlined from '@mui/icons-material/SupportAgentOutlined'
+import { useCart } from '../context/CartContext'
+import Fab from '@mui/material/Fab';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import Cart from '../components/cart/Cart'
 
 // Prices are stored in kobo, so divide by 100 to display naira
 const formatPrice = (kobo) =>
@@ -51,6 +56,8 @@ export default function Home() {
     const [error, setError] = useState('')
     const [email, setEmail] = useState('')
     const { setMessage } = useNotification()
+    // const { addToCart } = useCart()
+    const { cart, setCart, handleCartClose, handleCartOpen, showCart, addToCart } = useCart()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,7 +80,7 @@ export default function Home() {
     const category = products.map(item => {
         return item.category
     })
-    console.log(category)
+
 
     // const filterByCategory = products.filter(item => item.includes(products.category))
     // const filterByCategory = products.filter(item => item.category === catergory)
@@ -201,7 +208,7 @@ export default function Home() {
                                             variant="contained"
                                             fullWidth
                                             disabled={p.stock === 0}
-                                        // onClick={() => addToCart(p._id)}   // wire up in Phase 3
+                                            onClick={() => addToCart(p._id)}   // wire up in Phase 3
                                         >
                                             Add to cart
                                         </Button>
@@ -234,6 +241,28 @@ export default function Home() {
                     </Box>
                 </Container>
             </Box>
+
+            <Box sx={{ '& > :not(style)': { m: 1 } }}>
+
+
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    sx={{
+                        position: "fixed",
+                        bottom: 24,
+                        right: 24,
+                        zIndex: 1000
+                    }}
+                    onClick={handleCartOpen}
+                >
+                    <ShoppingBagIcon />
+                </Fab>
+
+            </Box>
+
+
+            <Cart showCart={showCart} cart={cart} setCart={setCart} handleCartClose={handleCartClose} />
         </Box>
     )
 }

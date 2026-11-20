@@ -20,15 +20,24 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import Cart from '../components/cart/Cart'
 import { Carousel } from 'react-responsive-carousel'
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { useCart } from '../context/CartContext'
 
 
 
 
-const Show = ({ handleCartClose, showCart, handleCartOpen }) => {
+const Show = () => {
     const [product, setProduct] = useState({})
     const { setMessage } = useNotification();
     const [loading, setLoading] = useState(false)
     const { slug } = useParams();
+    const {
+        getProductQuantity,
+        setCart,
+        increment,
+        decrement,
+        handleCartClose,
+        handleCartOpen,
+        showCart } = useCart()
 
 
     useEffect(() => {
@@ -50,56 +59,12 @@ const Show = ({ handleCartClose, showCart, handleCartOpen }) => {
         fetchData();
     }, [])
 
-    const [count, setCount] = useState(product.quantity)
+    // const [count, setCount] = useState(product.quantity)
+
+    const count = getProductQuantity(product._id)
 
 
-    const handleChange = (e) => {
-        setCount(e.target.value)
 
-        if (rawValue === '') {
-            setCount('');
-            return;
-        }
-        const parsed = parseInt(rawValue, 10);
-        if (!Number.isNaN(parsed) && parsed >= 1) {
-            setCount(parsed);
-        }
-    }
-
-    const handleBlur = async () => {
-        const validCount = Number(count) >= 1 ? Number(count) : product.quantity;
-        setCount(validCount);
-
-        if (validCount !== product.quantity) {
-            await updateQuantity(product._id, validCount);
-        }
-    };
-
-    const increment = async () => {
-        const current = Number(count) || 0;
-        const nextCount = current + 1;
-        setCount(nextCount);
-        try {
-            const res = await updateQuantity(product._id, nextCount);
-            setCart(res.data.updatedCart.items)
-        } catch (err) {
-            setCount(previousCount);
-            console.log('failed to update quantity', err)
-        }
-    }
-
-    const decrement = async () => {
-        const current = Number(count) || 1;
-        if (current <= 1) return
-        const nextCount = current - 1;
-        setCount(nextCount)
-        try {
-            await updateQuantity(product._id, nextCount);
-        } catch (err) {
-            setCount(previousCount);
-            console.log('failed to update quantity', err)
-        }
-    }
     const addToCart = async (id) => {
         try {
             const res = await addCart(id);
@@ -182,9 +147,11 @@ const Show = ({ handleCartClose, showCart, handleCartOpen }) => {
 
                             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', }}>
                                 <Box sx={{ marginRight: 'auto', gap: '5px', display: 'flex', fontSize: '1.5rem' }}>
-                                    <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px', }} onClick={increment}><AddIcon /></IconButton>
-                                    <input min="1" type='number' onBlur={handleBlur} onChange={handleChange} value={count} className='show__input__field' />
-                                    <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px' }} disabled={count <= 0 ? true : false} onClick={decrement}
+                                    <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px', }} onClick={() => increment(product._id)}><AddIcon /></IconButton>
+                                    {/* <input min="1" type='number' onBlur={handleBlur} onChange={handleChange} value={count} className='show__input__field' />
+                                     */}
+                                    <span>{count}</span>
+                                    <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px' }} onClick={() => decrement(product._id)}
                                     ><RemoveIcon /></IconButton>
                                     <Button
                                         size="small"

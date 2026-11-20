@@ -54,9 +54,9 @@ const sortOptions = [
     { value: 'name', label: 'Name: A to Z' },
 ]
 
-export default function Shop({ setShowCart, showCart, handleCartOpen, handleCartClose }) {
+export default function Shop({ setShowCart, }) {
     const theme = useTheme()
-    const { cart, setCart } = useCart()
+    const { cart, setCart, handleCartClose, handleCartOpen, showCart } = useCart()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
     // const handleCartOpen = () => setShowCart(true)
@@ -86,6 +86,7 @@ export default function Shop({ setShowCart, showCart, handleCartOpen, handleCart
     useEffect(() => {
         const fetchCat = async () => {
             const res = await fetchCategories()
+            console.log(res.data)
             setCategories(res.data)
         }
         fetchCat();

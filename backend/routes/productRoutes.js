@@ -13,9 +13,9 @@ const newPage = async (req, res) => {
     })
 }
 router.get('/', catchAsync(allProducts))
-router.get('/:slug', catchAsync(findProduct))
 router.get('/categories', catchAsync(allCategories))
 router.get('/shop', catchAsync(allProducts))
+router.get('/:slug', catchAsync(findProduct))
 router.post('/new', upload.array('images', 10), validateProduct, catchAsync(createProduct))
 router.patch('/update/:id', catchAsync(updateProduct))
 router.post('/delete/:id', catchAsync(softDeleteProduct))

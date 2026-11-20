@@ -59,8 +59,6 @@ module.exports.updateQuantity = async (req, res) => {
             message: 'Item not found'
         })
     }
-
-    console.log('qunatity updatted')
     res.json({
         message: 'Quantity updated',
         updatedCart

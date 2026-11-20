@@ -12,58 +12,15 @@ import { useCart } from '../../context/CartContext';
 
 
 
+
 const CartItem = ({ newItem = {} }) => {
-    // const [count, setCount] = useState(newItem.quantity)
     const { setMessage } = useNotification()
-    const { deleteFromCart, setCart, count, setCount } = useCart();
-    const increment = async () => {
-        const current = Number(count) || 0;
-        const nextCount = current + 1;
-        setCount(nextCount);
-        try {
-            const res = await updateQuantity(newItem.product._id, nextCount);
-            setCart(res.data.updatedCart.items)
-        } catch (err) {
-            setCount(previousCount);
-            console.log('failed to update quantity', err)
-        }
-    }
+    const { deleteFromCart, setCart, increment, decrement, getProductQuantity } = useCart();
 
-    const decrement = async () => {
-        const current = Number(count) || 1;
-        if (current <= 1) return
-        const nextCount = current - 1;
-        setCount(nextCount)
-        try {
-            await updateQuantity(newItem.product._id, nextCount);
-        } catch (err) {
-            setCount(previousCount);
-            console.log('failed to update quantity', err)
-        }
-    }
+    const productId = newItem.product._id || newItem.product
 
+    const count = getProductQuantity(productId)
 
-    const handleChange = (e) => {
-        setCount(e.target.value)
-
-        if (rawValue === '') {
-            setCount('');
-            return;
-        }
-        const parsed = parseInt(rawValue, 10);
-        if (!Number.isNaN(parsed) && parsed >= 1) {
-            setCount(parsed);
-        }
-    }
-
-    const handleBlur = async () => {
-        const validCount = Number(count) >= 1 ? Number(count) : newItem.quantity;
-        setCount(validCount);
-
-        if (validCount !== newItem.quantity) {
-            await updateQuantity(newItem.product._id, validCount);
-        }
-    };
 
 
 
@@ -108,10 +65,12 @@ const CartItem = ({ newItem = {} }) => {
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', }}>
-                    <Box sx={{ marginRight: 'auto', gap: '5px', display: 'flex' }}>
-                        <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} onClick={increment}><AddIcon /></IconButton>
-                        <input min="1" type='number' onBlur={handleBlur} onChange={handleChange} value={count} className='input__field' />
-                        <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} disabled={count <= 0 ? true : false} onClick={decrement}
+                    <Box sx={{ marginRight: 'auto', gap: '5px', display: 'flex', alignItems: 'center' }}>
+                        <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} onClick={() => increment(productId)}><AddIcon /></IconButton>
+                        {/* <input min="1" type='number' onBlur={handleBlur} onChange={handleChange} value={count} className='input__field' />
+                         */}
+                        <span>{newItem.quantity}</span>
+                        <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} onClick={() => decrement(productId)}
                         ><RemoveIcon /></IconButton>
                     </Box>
                     <IconButton onClick={() => deleteFromCart(newItem.product._id)} sx={{ fontSize: '0.7rem', fontWeight: 700 }}><DeleteIcon /></IconButton>
