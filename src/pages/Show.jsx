@@ -9,7 +9,9 @@ import {
     Fab,
     Typography, Paper, Divider,
     IconButton,
-    Button
+    Button,
+    CircularProgress,
+    Badge
 } from '@mui/material';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,6 +23,10 @@ import Cart from '../components/cart/Cart'
 import { Carousel } from 'react-responsive-carousel'
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { useCart } from '../context/CartContext'
+import DetailsAccordion from '../components/reuseable/DetailsAccordion'
+import CheckIcon from '@mui/icons-material/Check';
+
+
 
 
 
@@ -29,8 +35,10 @@ const Show = () => {
     const [product, setProduct] = useState({})
     const { setMessage } = useNotification();
     const [loading, setLoading] = useState(false)
+    const [adding, setAdding] = useState(false)
     const { slug } = useParams();
     const {
+        cart,
         getProductQuantity,
         setCart,
         increment,
@@ -45,7 +53,6 @@ const Show = () => {
             setLoading(true)
             try {
                 const res = await fetchProduct(slug);
-                console.log('thsi is product', product)
                 setProduct(res.data)
             } catch (err) {
                 setMessage({
@@ -58,6 +65,7 @@ const Show = () => {
         }
         fetchData();
     }, [])
+    console.log('thsi is product', product)
 
     // const [count, setCount] = useState(product.quantity)
 
@@ -66,13 +74,15 @@ const Show = () => {
 
 
     const addToCart = async (id) => {
+        setAdding(true)
         try {
             const res = await addCart(id);
-            console.log(res.data)
             setCart(res.data.cart.items)
             handleCartOpen()
         } catch (err) {
             console.log(err?.response?.data.message)
+        } finally {
+            setAdding(false)
         }
     }
 
@@ -145,28 +155,31 @@ const Show = () => {
 
 
 
-                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', m: 2 }}>
                                 <Box sx={{ marginRight: 'auto', gap: '5px', display: 'flex', fontSize: '1.5rem' }}>
-                                    <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px', }} onClick={() => increment(product._id)}><AddIcon /></IconButton>
-                                    {/* <input min="1" type='number' onBlur={handleBlur} onChange={handleChange} value={count} className='show__input__field' />
-                                     */}
-                                    <span>{count}</span>
-                                    <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px' }} onClick={() => decrement(product._id)}
-                                    ><RemoveIcon /></IconButton>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px' }} onClick={() => decrement(product._id)}
+                                        ><RemoveIcon /></IconButton>
+                                        <span style={{ border: '0.4px solid #000', padding: '5px 20px', borderRadius: '10px' }}>{count}</span>
+                                        <IconButton sx={{ border: '0.4px solid #000', borderRadius: '8px', }} onClick={() => increment(product._id)}><AddIcon /></IconButton>
+                                    </Box>
                                     <Button
                                         size="small"
                                         variant="contained"
                                         fullWidth
+                                        color={adding ? 'success' : 'primary'}
                                         disabled={product.stock === 0}
                                         startIcon={
-                                            <ShoppingBagIcon />
+                                            adding ? <CircularProgress /> : <ShoppingBagIcon />
                                         }
                                         onClick={() => addToCart(product._id)}   // wire up in Phase 3
                                     >
-                                        Add to cart
+                                        {adding ? 'Added to cart' : 'Add to cart'}
                                     </Button>
                                 </Box>
                             </Box>
+
+                            <DetailsAccordion product={product} />
                         </Paper>
                     </Grid>
                 </Grid>
@@ -174,23 +187,31 @@ const Show = () => {
 
 
             </Box>
-
             <Box sx={{ '& > :not(style)': { m: 1 } }}>
-                <Fab
-                    color="primary"
-                    aria-label="add"
+                <Badge
+                    badgeContent={cart.length}
+                    color="secondary"
+                    max={99}
                     sx={{
                         position: "fixed",
                         bottom: 24,
                         right: 24,
-                        zIndex: 1000
+                        zIndex: 1000,
+                        '& .MuiBadge-badge': {
+                            fontWeight: 700,
+                            fontSize: 11,
+                        },
                     }}
-                    onClick={handleCartOpen}
                 >
-                    <ShoppingBagIcon />
-                </Fab>
+                    <Fab
+                        color="primary"
+                        aria-label="open cart"
+                        onClick={handleCartOpen}
+                    >
+                        <ShoppingBagIcon />
+                    </Fab>
+                </Badge>
             </Box>
-
             <Cart showCart={showCart} handleCartClose={handleCartClose} />
         </>
 

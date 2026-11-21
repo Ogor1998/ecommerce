@@ -88,7 +88,7 @@ const Cart = ({ showCart, handleCartClose }) => {
                                 <Typography fontWeight={700} sx={{ mb: 1, fontSize: '0.9rem', color: '#6c757d' }}>{item.product.name} {`x ${item.quantity}`}</Typography>
                             ))
                         }
-                        <Typography fontWeight={700} sx={{ mb: 1 }}>Total: {formatPrice(total)}</Typography>
+                        <Typography fontWeight={700} sx={{ mb: 1, color: '#111827' }}>Total: {formatPrice(total)}</Typography>
                         <Button variant="contained" fullWidth size="large">
                             <ShoppingCartIcon />    Proceed to checkout
                         </Button>

@@ -66,12 +66,11 @@ const CartItem = ({ newItem = {} }) => {
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', }}>
                     <Box sx={{ marginRight: 'auto', gap: '5px', display: 'flex', alignItems: 'center' }}>
-                        <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} onClick={() => increment(productId)}><AddIcon /></IconButton>
-                        {/* <input min="1" type='number' onBlur={handleBlur} onChange={handleChange} value={count} className='input__field' />
-                         */}
-                        <span>{newItem.quantity}</span>
                         <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} onClick={() => decrement(productId)}
                         ><RemoveIcon /></IconButton>
+
+                        <span>{newItem.quantity}</span>
+                        <IconButton sx={{ border: '0.4px solid #000', p: 0.2, borderRadius: '8px' }} onClick={() => increment(productId)}><AddIcon /></IconButton>
                     </Box>
                     <IconButton onClick={() => deleteFromCart(newItem.product._id)} sx={{ fontSize: '0.7rem', fontWeight: 700 }}><DeleteIcon /></IconButton>
                 </Box>

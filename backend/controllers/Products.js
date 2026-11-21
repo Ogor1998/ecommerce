@@ -1,18 +1,12 @@
 const Product = require('../models/Product')
 const { uploadToCloudinary } = require('../cloudinary')
+const { SORTS, escapeRegex } = require('../utils/productFilters')
 
-const SORTS = {
-    '-createdAt': { createdAt: -1 },
-    'price': { price: 1 },
-    '-price': { price: -1 },
-    'name': { name: 1 },
-}
 
-const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 module.exports.allProducts = async (req, res) => {
     const page = Math.max(Number(req.query.page) || 1, 1)
-    const limit = Math.min(Number(req.query.limit) || 12, 50)   // cap it
+    const limit = Math.min(Number(req.query.limit) || 6, 50)   // cap it
     const skip = (page - 1) * limit
 
     const { q, category, minPrice, maxPrice } = req.query
@@ -55,7 +49,7 @@ module.exports.findProduct = async (req, res) => {
 
 module.exports.allCategories = async (req, res) => {
     const categories = await Product.distinct('category', { isActive: true })
-    console.log('this is categories', categories)
+    // console.log('this is categories', categories)
     res.json(categories.sort())
 }
 

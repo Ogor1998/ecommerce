@@ -29,6 +29,7 @@ import { useCart } from '../context/CartContext'
 import Fab from '@mui/material/Fab';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import Cart from '../components/cart/Cart'
+import { Badge } from '@mui/material'
 
 // Prices are stored in kobo, so divide by 100 to display naira
 const formatPrice = (kobo) =>
@@ -241,24 +242,30 @@ export default function Home() {
                     </Box>
                 </Container>
             </Box>
-
             <Box sx={{ '& > :not(style)': { m: 1 } }}>
-
-
-                <Fab
-                    color="primary"
-                    aria-label="add"
+                <Badge
+                    badgeContent={cart.length}
+                    color="secondary"
+                    max={99}
                     sx={{
                         position: "fixed",
                         bottom: 24,
                         right: 24,
-                        zIndex: 1000
+                        zIndex: 1000,
+                        '& .MuiBadge-badge': {
+                            fontWeight: 700,
+                            fontSize: 11,
+                        },
                     }}
-                    onClick={handleCartOpen}
                 >
-                    <ShoppingBagIcon />
-                </Fab>
-
+                    <Fab
+                        color="primary"
+                        aria-label="open cart"
+                        onClick={handleCartOpen}
+                    >
+                        <ShoppingBagIcon />
+                    </Fab>
+                </Badge>
             </Box>
 
 

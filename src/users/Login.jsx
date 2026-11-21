@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material"
+import { Box, Button, Paper, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import Password from "../components/reuseable/Password"
 import { useNotification } from "../context/NotificationContext"
@@ -127,14 +127,34 @@ export default function Login() {
     }
     return (
 
-        <Box className='form__container'>
-            <Box
-                component="form"
-                className="form"
-                onSubmit={handleSubmit}
-                fullWidth
+        <Box
+            sx={{
+                height: '30rem',
+                display: 'flex',
+                // alignItems: 'center',
+                justifyContent: 'center',
+
+                p: 2,
+                // background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            }}
+        >
+            {message && <div>   <AlertBox /></div>}
+
+            <Paper
+                elevation={0}
+                sx={{
+                    display: 'flex',
+                    width: '100%',
+                    flexDirection: 'column',
+                    maxWidth: 480,
+                    p: { xs: 3, sm: 4 },
+                    gap: '30px',
+                    borderRadius: 4,
+                    backdropFilter: 'blur(14px)',
+                    background: 'rgba(255,255,255,0.88)',
+                    boxShadow: '10px 10px 30px rgba(0,0,0,0.25)',
+                }}
             >
-                {message && <div>   <AlertBox /></div>}
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <AccountCircleIcon />
                     <Typography variant="h6" gutterBottom>
@@ -164,10 +184,10 @@ export default function Login() {
                 <Typography variant="h6" sx={{ fontSize: '1.4rem' }} gutterBottom>
                     Don't have an account? <NavLink className='login__link' to={'/register'}>Sign Up</NavLink>
                 </Typography>
-
-            </Box>
+            </Paper>
 
         </Box>
+
 
     )
 }

@@ -26,6 +26,7 @@ import {
     Slider,
     useMediaQuery,
     useTheme,
+    Badge
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterListIcon from '@mui/icons-material/FilterList'
@@ -38,7 +39,7 @@ import { addCart } from '../api/carts'
 import { useCart } from '../context/CartContext'
 import { formatPrice } from '../utils/formatPrice'
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 6
 const MAX_PRICE = 500000   // in naira, adjust to your catalogue
 
 // Prices are stored in kobo
@@ -56,11 +57,8 @@ const sortOptions = [
 
 export default function Shop({ setShowCart, }) {
     const theme = useTheme()
-    const { cart, setCart, handleCartClose, handleCartOpen, showCart } = useCart()
+    const { cart, setCart, handleCartClose, handleCartOpen, showCart, addToCart } = useCart()
     const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-
-    // const handleCartOpen = () => setShowCart(true)
-    // const handleCartClose = () => setShowCart(false)
 
     // The URL is the source of truth, so filters survive refresh and can be shared as links
     const [searchParams, setSearchParams] = useSearchParams()
@@ -110,15 +108,6 @@ export default function Shop({ setShowCart, }) {
         }, 400)
         return () => clearTimeout(t)
     }, [searchInput])
-    const addToCart = async (id) => {
-        try {
-            const res = await addCart(id);
-            console.log(res.data)
-            setCart(res.data.cart.items)
-        } catch (err) {
-            console.log(err?.response?.data.message)
-        }
-    }
 
 
     useEffect(() => {
@@ -319,6 +308,7 @@ export default function Shop({ setShowCart, }) {
                                                 variant="contained"
                                                 fullWidth
                                                 disabled={p.stock === 0}
+                                                sx={{ backgroundColor: '#111827' }}
                                                 onClick={() => addToCart(p._id)}   // wire up in Phase 3
                                             >
                                                 Add to cart
@@ -357,24 +347,30 @@ export default function Shop({ setShowCart, }) {
                 </Grid>
             </Grid>
             <Box sx={{ '& > :not(style)': { m: 1 } }}>
-
-
-                <Fab
-                    color="primary"
-                    aria-label="add"
+                <Badge
+                    badgeContent={cart.length}
+                    color="secondary"
+                    max={99}
                     sx={{
                         position: "fixed",
                         bottom: 24,
                         right: 24,
-                        zIndex: 1000
+                        zIndex: 1000,
+                        '& .MuiBadge-badge': {
+                            fontWeight: 700,
+                            fontSize: 11,
+                        },
                     }}
-                    onClick={handleCartOpen}
                 >
-                    <ShoppingBagIcon />
-                </Fab>
-
+                    <Fab
+                        color="primary"
+                        aria-label="open cart"
+                        onClick={handleCartOpen}
+                    >
+                        <ShoppingBagIcon />
+                    </Fab>
+                </Badge>
             </Box>
-
 
             <Cart showCart={showCart} cart={cart} setCart={setCart} handleCartClose={handleCartClose} />
             {/* ── Mobile filter drawer ── */}
