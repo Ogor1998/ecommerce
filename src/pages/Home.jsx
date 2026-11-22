@@ -30,10 +30,11 @@ import Fab from '@mui/material/Fab';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import Cart from '../components/cart/Cart'
 import { Badge } from '@mui/material'
+import { changeTolocalCurrency } from '../utils/changeTolocalCurrency'
 
 // Prices are stored in kobo, so divide by 100 to display naira
-const formatPrice = (kobo) =>
-    new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(kobo / 100)
+// const formatPrice = (kobo) =>
+//     new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(kobo / 100)
 
 // Replace with categories from your API once Phase 2 is done
 const categories = [
@@ -196,7 +197,7 @@ export default function Home() {
                                                 {p.name}
                                             </Typography>
                                             <Typography color="primary" fontWeight={700}>
-                                                {formatPrice(p.price)}
+                                                {changeTolocalCurrency(p.price)}
                                             </Typography>
                                             {p.stock === 0 && (
                                                 <Typography variant="caption" color="error">Out of stock</Typography>

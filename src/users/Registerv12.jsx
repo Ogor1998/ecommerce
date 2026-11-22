@@ -144,17 +144,26 @@ export default function Register() {
                             <IconButton
                                 component="label"
                                 size="small"
+                                aria-label="upload avatar"
                                 sx={{
                                     position: 'absolute',
-                                    bottom: -4,
-                                    right: -4,
+                                    bottom: 0,
+                                    right: 0,
+                                    width: 32,
+                                    height: 32,
                                     bgcolor: 'primary.main',
                                     color: '#fff',
+                                    border: '2px solid #fff',
                                     '&:hover': { bgcolor: 'primary.dark' },
                                 }}
                             >
-                                <PhotoCamera fontSize="small" />
-                                <input hidden type="file" accept="image/*" onChange={handleFile} />
+                                <PhotoCamera sx={{ fontSize: 16 }} />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFile}
+                                    style={{ display: 'none' }}
+                                />
                             </IconButton>
                         </Box>
                     </Box>

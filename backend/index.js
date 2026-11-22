@@ -9,6 +9,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const userRoutes = require('./routes/userRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
 app.use('/products', productRoutes)
 app.use('/cart', cartRoutes)
 app.use('/', userRoutes)
+app.use('/profile', profileRoutes)
 
 
 app.get('/check-auth', isLoggedIn, catchAsync(async (req, res) => {

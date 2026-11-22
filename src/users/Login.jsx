@@ -128,12 +128,13 @@ export default function Login() {
     return (
 
         <Box
+            component='form'
+            onSubmit={handleSubmit}
             sx={{
                 height: '30rem',
                 display: 'flex',
                 // alignItems: 'center',
                 justifyContent: 'center',
-
                 p: 2,
                 // background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             }}
