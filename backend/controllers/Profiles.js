@@ -4,7 +4,7 @@ const { uploadToCloudinary } = require('../cloudinary')
 
 
 module.exports.findUser = async (req, res) => {
-    const user = await User.findOne({ username: req.user.username }).select('-password').populate('firstname', 'image', 'description')
+    const user = await User.findOne({ username: req.user.username }).select('-password')
     // const order = await Order.findOne({ user: req.user.userId }) || {}
     if (!user) {
         return res.status(404).json({
@@ -22,20 +22,22 @@ module.exports.findUser = async (req, res) => {
 }
 
 module.exports.updateUser = async (req, res) => {
-    const { firstname, lastname, email, shippingAddress } = req.body;
-    const updateData = { firstname, lastname, email, shippingAddress }
-    const user = await User.findOneAndUpdate({ username: req.user.username },
-        { updateData },
-        { returnDocument: 'after' })
-
+    console.log(req.body)
+    const { firstname, lastname, email, shippingAddress, description } = req.body;
+    const updateData = { firstname, lastname, email, shippingAddress, description }
     if (req.file) {
         const result = await uploadToCloudinary(req.file.buffer)
         updateData.image = result.secure_url
     }
+    const user = await User.findOneAndUpdate({ username: req.user.username },
+        { $set: updateData },
+        { returnDocument: 'after' })
+
     if (!user) {
         return res.status(404).json({
             message: 'user not found'
         })
     }
+    console.log(user)
     res.json(user)
 }

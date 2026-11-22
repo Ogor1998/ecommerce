@@ -7,5 +7,6 @@ export const getUserProfile = (username) => {
 }
 
 export const updateUserProfile = (username, specs) => {
+    console.log(specs)
     return api.patch(`/profile/${username}/edit`, { specs })
 }

@@ -3,11 +3,12 @@ const router = express.Router({ mergeParams: true });
 const { updateUser, findUser } = require('../controllers/Profiles');
 const { catchAsync } = require('../utils/catchAsync');
 const { isLoggedIn } = require('../middleware/auth');
+const { upload } = require('../cloudinary')
 
 
 
 router.get('/:username', isLoggedIn, catchAsync(findUser))
-router.patch('/edit', catchAsync(updateUser))
+router.put('/', isLoggedIn, upload.single('image'), catchAsync(updateUser))
 
 
 

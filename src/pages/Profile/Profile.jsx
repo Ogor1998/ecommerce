@@ -4,12 +4,13 @@ import { useParams, useNavigate } from "react-router-dom"
 // import ProfileComponent from "./ProfileComponent"
 import ProfileComponent from "./ProfileComponentv1"
 import './Profile.css'
-
+import { Box } from "@mui/material"
 import { getUserProfile } from "../../api/profile"
-
+import ProfileDrawer from "../../components/common/ProfileDrawer"
 import ProfileSkeleton from "../../skeletons/ProfileSkeleton"
 import { useNotification } from "../../context/NotificationContext"
 import { useAuth } from "../../context/AuthContext"
+
 
 export default function Profile() {
     const [profile, setProfile] = useState({});
@@ -17,6 +18,7 @@ export default function Profile() {
     const [loading, setLoading] = useState(true)
     const { username } = useParams();
     const { setMessage } = useNotification();
+
     useEffect(() => {
         if (!username || username === "undefined") return;
         const fetchProfile = async () => {
@@ -40,6 +42,7 @@ export default function Profile() {
         return <ProfileSkeleton />
     }
     return (
+
         <ProfileComponent profile={profile} username={username} />
 
     )

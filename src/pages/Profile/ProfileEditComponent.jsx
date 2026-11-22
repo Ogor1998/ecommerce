@@ -27,7 +27,8 @@ export default function ProfileEditComponent() {
         lastname: "",
         email: "",
         image: "",
-        description: ""
+        description: "",
+        shippingAddress: ""
     });
     const [loading, setLoading] = useState(false)
     const [preview, setPreview] = useState(null)
@@ -80,7 +81,8 @@ export default function ProfileEditComponent() {
                 lastname: profile.lastname || "",
                 email: profile.email || "",
                 image: profile.image || "",
-                description: profile.description || ""
+                description: profile.description || "",
+                shippingAddress: profile.shippingAddress || ""
             });
         }
     }, [profile]);
@@ -105,13 +107,14 @@ export default function ProfileEditComponent() {
         form.append("firstname", formData.firstname)
         form.append("lastname", formData.lastname)
         form.append("description", formData.description)
+        form.append("shippingAddress", formData.shippingAddress)
 
         if (file) {
             form.append("image", file)
         }
 
         try {
-            const response = await axios.put('/profile', form, {
+            const response = await axios.put(`/profile`, form, {
                 withCredentials: true,
             });
             console.log('this is form object', formData)
@@ -192,6 +195,16 @@ export default function ProfileEditComponent() {
                     fullWidth
                     maxRows={4}
                     value={formData.description}
+                    onChange={handleChange}
+                />
+                <TextField
+                    id="outlined-multiline-flexible"
+                    label="Shipping"
+                    name="shippingAddress"
+                    multiline
+                    fullWidth
+                    maxRows={4}
+                    value={formData.shippingAddress}
                     onChange={handleChange}
                 />
 

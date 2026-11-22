@@ -23,7 +23,8 @@ const userSchema = new Schema({
     firstname: String,
     lastname: String,
     image: String,
-    description: String
+    description: String,
+    shippingAddress: String
 }, { timestamps: true })
 
 
