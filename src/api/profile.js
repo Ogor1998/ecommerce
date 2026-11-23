@@ -6,7 +6,6 @@ export const getUserProfile = (username) => {
     return api.get(`/profile/${username}`)
 }
 
-export const updateUserProfile = (username, specs) => {
-    console.log(specs)
-    return api.patch(`/profile/${username}/edit`, { specs })
+export const updateUserProfile = (form) => {
+    return api.put(`/profile`, form)
 }

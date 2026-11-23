@@ -43,7 +43,7 @@ export default function Profile() {
     }
     return (
 
-        <ProfileComponent profile={profile} username={username} />
+        <ProfileComponent profile={profile} setProfile={setProfile} username={username} />
 
     )
 }

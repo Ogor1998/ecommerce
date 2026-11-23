@@ -1,6 +1,9 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import ButtonBase from '@mui/material/ButtonBase';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import { Box } from '@mui/material';
+
 
 export default function AvatarUpload({ setFile, currentImage }) {
     const [avatarSrc, setAvatarSrc] = React.useState(currentImage);
@@ -35,10 +38,32 @@ export default function AvatarUpload({ setFile, currentImage }) {
 
             }}
         >
-            <Avatar alt="Upload new avatar" src={avatarSrc} sx={{
-                width: 56,
-                height: 56,
-            }} />
+            <Box sx={{ position: 'relative', width: 100, height: 100 }}>
+                <Avatar
+                    alt="Upload new avatar"
+                    src={avatarSrc}
+                    sx={{ width: 100, height: 100 }}
+                />
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(0, 0, 0, 0.5)',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: 0,
+                        transition: 'opacity 0.2s ease-in-out',
+                        '&:hover': {
+                            opacity: 1,
+                        },
+                    }}
+                >
+                    <PhotoCameraIcon />
+                </Box>
+            </Box>
             <input
                 type="file"
                 accept="image/*"
@@ -56,5 +81,9 @@ export default function AvatarUpload({ setFile, currentImage }) {
                 onChange={handleAvatarChange}
             />
         </ButtonBase>
+
+
+
+
     );
 }

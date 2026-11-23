@@ -6,9 +6,10 @@ import {
     Typography,
     Button,
     Divider,
-    Paper,
+    TextField, CardActions,
     IconButton,
-    CardActionArea, CardActions,
+    Stack,
+
 } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import TabComponent from "./TabComponent";
@@ -22,36 +23,101 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ProfileDrawer from "../../components/common/ProfileDrawer";
 import AvatarUpload from "./AvatarUpload";
+import CreateIcon from '@mui/icons-material/Create';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { CircularProgress } from "@mui/material";
+import SaveIcon from '@mui/icons-material/Save';
+import { useNotification } from "../../context/NotificationContext";
+import { updateUserProfile } from "../../api/profile";
 
-export default function ProfileComponent({ profile, username }) {
+export default function ProfileComponent({ profile, username, setProfile }) {
     const { currentUser } = useAuth();
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [sublength, setSublength] = useState(true)
-    const [file, setFile] = useState(profile?.image)
+    const [file, setFile] = useState(null)
+    const [isEditting, setIsEditting] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
+    const { setMessage } = useNotification()
+
+
+
     useEffect(() => {
-        if (!profile) return
-        const fetchBoards = async () => {
-            try {
-                const res = await getUserProfile(profile.username)
-                // setBoard(res.data.board)
-                // setboardsCount(res.data.boardCount)
-                // setCommentsCount(res.data.commentsCount)
-            } catch (err) {
-                console.log(err)
-            } finally {
-                setLoading(false)
-            }
+        if (profile) {
+            setFormData({
+                username: profile.username || "",
+                firstname: profile.firstname || "",
+                lastname: profile.lastname || "",
+                email: profile.email || "",
+                image: profile.image || "",
+                description: profile.description || "",
+                shippingAddress: profile.shippingAddress || ""
+            });
         }
-        fetchBoards()
-    }, [profile])
+    }, [profile]);
     const switchSubstringLength = () => {
         setSublength(prev => !prev)
     }
 
+    const [formData, setFormData] = useState({
+        username: "",
+        firstname: "",
+        lastname: "",
+        email: "",
+        image: "",
+        description: "",
+        shippingAddress: ""
+    });
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSaving(true)
+
+        const form = new FormData();
+        form.append("username", formData.username)
+        form.append("email", formData.email)
+        form.append("firstname", formData.firstname)
+        form.append("lastname", formData.lastname)
+        form.append("description", formData.description)
+        form.append("shippingAddress", formData.shippingAddress)
+
+        if (file) {
+            form.append("image", file)
+        }
+
+        console.log(formData)
+        try {
+            const response = await updateUserProfile(form);
+            console.log('gets here')
+            console.log('this is form object', formData)
+            setProfile(response.data)
+            setFile(null);
+            setIsEditting(false);
+            setMessage({
+                text: "Profile updated successfully",
+                severity: "success"
+            });
+            navigate(`/profile/${currentUser.username}`)
+        } catch (err) {
+            setMessage({ text: err.response?.data?.message, severity: "error" })
+        } finally {
+            setIsSaving(false)
+        }
+    };
     const isOwnerProfile = profile?._id === currentUser?._id
-    console.log(profile.description)
+
 
     if (!profile || loading) return <ProfileSkeleton />
+
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormData(prev => ({ ...prev, [name]: value }))
+    }
+
+
+    const handleSwitch = () => {
+        setIsEditting(prev => !prev)
+    }
 
     return (
         <ProfileDrawer profile={profile}>
@@ -108,82 +174,183 @@ export default function ProfileComponent({ profile, username }) {
 
                     {isOwnerProfile && (
                         <Button
-                            component={RouterLink}
-                            to={`/profile/${username}/edit`}
-                            variant="outlined"
                             color="inherit"
+                            onClick={handleSwitch}
+                            variant={isEditting ? 'contained' : 'outlined'}
+                            startIcon={
+                                isEditting ? <ArrowBackIcon /> : <CreateIcon />
+                            }
                         >
-                            Edit
+                            {isEditting ? 'Back to Home' : 'Edit'}
                         </Button>
                     )}
                 </Box>
 
                 <Divider />
 
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    <Typography
-                        sx={{
-                            color: '#fff',
-                            flexBasis: 'calc(50% - 8px)',
-                            boxSizing: 'border-box',
-                            p: 2,
-                            bgcolor: 'primary.light',
-                        }}
-                    >
-                        Firstname: {profile.firstname}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            color: '#fff',
-                            flexBasis: 'calc(50% - 8px)',
-                            boxSizing: 'border-box',
-                            p: 2,
-                            bgcolor: 'primary.light',
-                        }}
-                    >
-                        Lastname:  {profile.lastname}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            color: '#fff',
-                            flexBasis: 'calc(50% - 8px)',
-                            boxSizing: 'border-box',
-                            p: 2,
-                            bgcolor: 'primary.light',
-                        }}
-                    >
-                        Username: @{profile.username}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            color: '#fff',
-                            flexBasis: 'calc(50% - 8px)',
-                            boxSizing: 'border-box',
-                            p: 2,
-                            bgcolor: 'primary.light',
-                        }}
-                    >
-                        Email: {profile.email}
-                    </Typography>
-                </Box>
+                {isEditting ? (
 
 
-                <Card sx={{ minWidth: 275 }}>
-                    <CardContent>
-                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-                            Default Shipping Address*
-                        </Typography>
-                        <Typography variant="body2">
+                    <Stack spacing={2}
+                        component='form'
+                        onSubmit={handleSubmit}>
+                        <Typography sx={{ fontSize: '2rem' }}>Update Personal Information</Typography>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            label="Username"
+                            name="username"
+                            value={formData.username}
+                            disabled
+                            helperText="Username cannot be modified"
+                        />
 
-                            {profile.shippingAddress}
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        <Button size="small">Learn More</Button>
-                    </CardActions>
-                </Card>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            label="Email Address"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
 
-            </Box>
-        </ProfileDrawer>
+                        <TextField
+                            id="outlined-multiline-flexible"
+                            label="Description"
+                            name="description"
+                            multiline
+                            fullWidth
+                            maxRows={4}
+                            value={formData.description}
+                            onChange={handleChange}
+                        />
+                        <Box sx={{ display: "flex", gap: 1.5 }}>
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="First Name"
+                                name="firstname"
+                                value={formData.firstname}
+                                onChange={handleChange}
+                                required
+                            />
+                            <TextField
+                                fullWidth
+                                size="small"
+                                label="Last Name"
+                                name="lastname"
+                                value={formData.lastname}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Box>
+                        <TextField
+                            id="outlined-multiline-flexible"
+                            label="Shipping"
+                            name="shippingAddress"
+                            multiline
+                            fullWidth
+                            maxRows={4}
+                            value={formData.shippingAddress}
+                            onChange={handleChange}
+                        />
+
+
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            disabled={isSaving}
+                            startIcon={
+                                isSaving ? (
+                                    <CircularProgress size={18} color="inherit" thickness={4} />
+                                ) : (
+                                    <SaveIcon />
+                                )
+                            }
+                            sx={{ minWidth: 140 }}
+                        >
+                            {isSaving ? "Saving..." : "Save Changes"}
+                        </Button>
+
+                    </Stack>
+
+                ) : (
+                    <>
+                        <Typography sx={{ fontSize: '2rem' }}>Personal Information</Typography>
+
+                        {/* <Stack spacing={2}> */}
+
+                        <Box
+                            sx={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(2, 1fr)',
+                                gap: 3, // Adjust spacing as needed (e.g., 3 = 24px, or use '40px')
+                            }}
+                        >
+                            <Box>
+                                <Typography sx={{ fontWeight: '700', color: 'text.secondary' }}>
+                                    Username
+                                </Typography>
+                                <Typography>@{profile.username}</Typography>
+                            </Box>
+
+                            <Box>
+                                <Typography sx={{ fontWeight: '700', color: 'text.secondary' }}>
+                                    Email
+                                </Typography>
+                                <Typography>{profile.email}</Typography>
+                            </Box>
+
+                            <Box>
+                                <Typography sx={{ fontWeight: '700', color: 'text.secondary' }}>
+                                    Firstname
+                                </Typography>
+                                <Typography>{profile.firstname}</Typography>
+                            </Box>
+
+                            <Box>
+                                <Typography sx={{ fontWeight: '700', color: 'text.secondary' }}>
+                                    Lastname
+                                </Typography>
+                                <Typography>{profile.lastname}</Typography>
+                            </Box>
+
+                            <Box sx={{ gridColumn: 'span 2' }}>
+                                <Typography sx={{ fontWeight: '700', color: 'text.secondary' }}>
+                                    Description
+                                </Typography>
+                                <Typography>{profile.description}</Typography>
+                            </Box>
+                        </Box>
+
+                        <Card sx={{ minWidth: 275 }}>
+                            <CardContent>
+                                <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: "2rem" }}>
+                                    Address
+                                </Typography>
+
+                                <Typography variant="body2" sx={{ fontSize: '1.6rem' }}>
+                                    {profile.shippingAddress}
+                                </Typography>
+
+                            </CardContent>
+
+                        </Card>
+
+                    </>
+                )
+                }
+
+
+                {profile?.updatedAt && (
+                    <Typography variant="caption" color="text.secondary" textAlign="center">
+                        Last modified: {new Date(profile.updatedAt).toLocaleDateString()}
+                    </Typography>
+                )}
+            </Box >
+        </ProfileDrawer >
     );
 }

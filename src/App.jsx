@@ -27,7 +27,7 @@ function App() {
         <Route path='/products/:slug' element={<Show />} />
         <Route path='/admin' element={<Show />} />
         <Route path='/profile/:username' element={<Profile />} />
-        <Route path='/profile/:username/edit' element={<ProfileEditComponent />} />
+        {/* <Route path='/profile/:username/edit' element={<ProfileEditComponent />} /> */}
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path="*" element={<Navigate to="/error" state={{ statusCode: 404, message: "Page not found" }} replace />} />
