@@ -7,7 +7,7 @@ const { upload } = require('../cloudinary')
 
 
 
-router.get('/:username', isLoggedIn, catchAsync(findUser))
+router.get('/', isLoggedIn, catchAsync(findUser))
 router.put('/', isLoggedIn, upload.single('image'), catchAsync(updateUser))
 
 

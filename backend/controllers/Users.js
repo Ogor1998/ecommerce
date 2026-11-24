@@ -1,8 +1,7 @@
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const { sendToken } = require('../utils/setAuthToken')
-const { isLoggedIn } = require('../middleware/auth')
+
 
 
 module.exports.register = async (req, res) => {

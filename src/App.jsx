@@ -12,6 +12,9 @@ import Show from './pages/Show'
 import NavBar from './components/navigation/NavBar'
 import Profile from './pages/Profile/Profile'
 import ProfileEditComponent from './pages/Profile/ProfileEditComponent'
+import ProfileDrawer from './components/common/ProfileDrawer'
+import SavedAddresses from './components/address/SavedAddresses'
+
 // import { Box, Fab, ShoppingBagIcon } from '@mui/material'
 
 
@@ -26,7 +29,14 @@ function App() {
         <Route path='/products/shop' element={<Shop />} />
         <Route path='/products/:slug' element={<Show />} />
         <Route path='/admin' element={<Show />} />
-        <Route path='/profile/:username' element={<Profile />} />
+        <Route path="/profile" element={<ProfileDrawer />}>
+          <Route index element={<Profile />} />
+          {/* <Route path="orders" element={<OrderHistory />} /> */}
+          <Route path="addresses" element={<SavedAddresses />} />
+          {/* <Route path="security" element={<SecuritySettings />} /> */}
+        </Route>
+        {/* <Route path='/profile/:username' element={<Profile />} /> */}
+
         {/* <Route path='/profile/:username/edit' element={<ProfileEditComponent />} /> */}
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />

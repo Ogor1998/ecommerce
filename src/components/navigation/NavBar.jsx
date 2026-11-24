@@ -214,7 +214,12 @@ const Navbar = () => {
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                     transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                                 >
-                                    <MenuItem disabled sx={{ opacity: '1 !important', fontWeight: 600 }}>
+                                    <MenuItem
+                                        onClick={() => {
+                                            handleMenuClose();
+                                            navigate('/profile');
+                                        }}
+                                        sx={{ opacity: '1 !important', fontWeight: 600 }}>
                                         {currentUser.username || currentUser.email}
                                     </MenuItem>
                                     <Divider />

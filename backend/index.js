@@ -12,6 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const addressRoutes = require('./routes/addressRoutes');
 
 const AppError = require('./utils/AppError');
 const { isLoggedIn } = require('./middleware/auth');
@@ -59,6 +60,7 @@ app.use('/products', productRoutes)
 app.use('/cart', cartRoutes)
 app.use('/', userRoutes)
 app.use('/profile', profileRoutes)
+app.use('/addresses', addressRoutes)
 
 
 app.get('/check-auth', isLoggedIn, catchAsync(async (req, res) => {

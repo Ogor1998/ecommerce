@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 
+const addressSchema = new Schema({
+    title: String,
+    lineOne: String,
+    lineTwo: String,
+    city: String,
+    state: String,
+    main: {
+        type: Boolean,
+        default: false
+    }
+}, { timestamps: true })
 
 const userSchema = new Schema({
     email: {
@@ -24,7 +35,7 @@ const userSchema = new Schema({
     lastname: String,
     image: String,
     description: String,
-    shippingAddress: String
+    shippingAddress: [addressSchema]
 }, { timestamps: true })
 
 

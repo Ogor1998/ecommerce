@@ -2,7 +2,7 @@ import axios from "axios"
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 // import ProfileComponent from "./ProfileComponent"
-import ProfileComponent from "./ProfileComponentv1"
+import ProfileComponent from "./ProfileDetails"
 import './Profile.css'
 import { Box } from "@mui/material"
 import { getUserProfile } from "../../api/profile"
@@ -10,6 +10,7 @@ import ProfileDrawer from "../../components/common/ProfileDrawer"
 import ProfileSkeleton from "../../skeletons/ProfileSkeleton"
 import { useNotification } from "../../context/NotificationContext"
 import { useAuth } from "../../context/AuthContext"
+import ProfileDetails from "./ProfileDetails"
 
 
 export default function Profile() {
@@ -18,12 +19,14 @@ export default function Profile() {
     const [loading, setLoading] = useState(true)
     const { username } = useParams();
     const { setMessage } = useNotification();
+    const { currentUser } = useAuth()
 
     useEffect(() => {
-        if (!username || username === "undefined") return;
+        // if (!username || username === "undefined") return;
         const fetchProfile = async () => {
             try {
-                const res = await getUserProfile(username)
+                const res = await getUserProfile()
+                console.log(res.data)
                 setProfile(res.data)
 
             } catch (err) {
@@ -36,14 +39,14 @@ export default function Profile() {
             }
         }
         fetchProfile();
-    }, [username])
+    }, [currentUser])
 
     if (loading) {
         return <ProfileSkeleton />
     }
     return (
 
-        <ProfileComponent profile={profile} setProfile={setProfile} username={username} />
+        <ProfileDetails profile={profile} setProfile={setProfile} />
 
     )
 }

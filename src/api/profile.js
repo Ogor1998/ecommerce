@@ -2,8 +2,8 @@ import api from "./axios";
 
 
 
-export const getUserProfile = (username) => {
-    return api.get(`/profile/${username}`)
+export const getUserProfile = () => {
+    return api.get(`/profile`)
 }
 
 export const updateUserProfile = (form) => {
