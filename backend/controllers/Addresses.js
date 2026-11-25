@@ -2,17 +2,18 @@ const User = require('../models/User');
 
 module.exports.addAddress = async (req, res) => {
     const { title, lineOne, lineTwo, city, state, main } = req.body;
-    const user = await User.findOne({ username: req.user.username });
+    console.log(req.body)
+    const user = await User.findOne({ username: req.user.username }).select("-password");
     if (!user) {
         return res.status(404).json({
             message: 'User not found'
         })
     }
-    if (user.shippingAddress.length >= 2) {
-        return res.status(403).json({
-            message: 'You already have two addresses. Delete one before adding a new one'
-        })
-    }
+    // if (user.shippingAddress.length >= 2) {
+    //     return res.status(403).json({
+    //         message: 'You already have two addresses. Delete one before adding a new one'
+    //     })
+    // }
     const isFirstAddress = user.shippingAddress.length === 0;
     const isMain = isFirstAddress ? true : Boolean(main);
     if (isMain && !isFirstAddress) {
@@ -46,10 +47,10 @@ module.exports.deleteAddress = async (req, res) => {
             message: 'User not found'
         })
     }
-
+    console.log(updateUser)
     res.json({
         message: 'You deleted this address',
-        updateUser
+        shippingAddress: updateUser.shippingAddress
     })
 
 }

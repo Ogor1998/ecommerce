@@ -7,6 +7,7 @@ import axios from 'axios'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { NotificationProvider } from './context/NotificationContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
+import { ProfileProvider } from './context/ProfileContext.jsx'
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -25,9 +26,11 @@ createRoot(document.getElementById('root')).render(
       <NotificationProvider>
         <CartProvider>
           <AuthProvider>
-            <ThemeProvider theme={theme}>
-              <App />
-            </ThemeProvider>
+            <ProfileProvider>
+              <ThemeProvider theme={theme}>
+                <App />
+              </ThemeProvider>
+            </ProfileProvider>
           </AuthProvider>
         </CartProvider>
       </NotificationProvider>

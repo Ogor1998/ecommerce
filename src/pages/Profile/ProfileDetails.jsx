@@ -29,88 +29,24 @@ import { CircularProgress } from "@mui/material";
 import SaveIcon from '@mui/icons-material/Save';
 import { useNotification } from "../../context/NotificationContext";
 import { updateUserProfile } from "../../api/profile";
+import { useProfile } from "../../context/ProfileContext";
 
-export default function ProfileDetails({ profile, username, setProfile }) {
+export default function ProfileDetails({ profile }) {
     const { currentUser } = useAuth();
-    const [loading, setLoading] = useState(false)
     const [sublength, setSublength] = useState(true)
-    const [file, setFile] = useState(null)
-    const [isEditting, setIsEditting] = useState(false)
-    const [isSaving, setIsSaving] = useState(false)
-    const { setMessage } = useNotification()
+    const { handleChange, handleSubmit, loading, isEditting, setIsEditting, isSaving, formData, setFile } = useProfile()
 
     console.log('this is profile', profile)
 
-    useEffect(() => {
-        if (profile) {
-            setFormData({
-                username: profile.username || "",
-                firstname: profile.firstname || "",
-                lastname: profile.lastname || "",
-                email: profile.email || "",
-                image: profile.image || "",
-                description: profile.description || "",
-                shippingAddress: profile.shippingAddress || ""
-            });
-        }
-    }, [profile]);
     const switchSubstringLength = () => {
         setSublength(prev => !prev)
     }
 
-    const [formData, setFormData] = useState({
-        username: "",
-        firstname: "",
-        lastname: "",
-        email: "",
-        image: "",
-        description: "",
-        shippingAddress: ""
-    });
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSaving(true)
-
-        const form = new FormData();
-        form.append("username", formData.username)
-        form.append("email", formData.email)
-        form.append("firstname", formData.firstname)
-        form.append("lastname", formData.lastname)
-        form.append("description", formData.description)
-        form.append("shippingAddress", formData.shippingAddress)
-
-        if (file) {
-            form.append("image", file)
-        }
-
-        console.log(formData)
-        try {
-            const response = await updateUserProfile(form);
-            setProfile(response.data)
-            setFile(null);
-            setIsEditting(false);
-            setMessage({
-                text: "Profile updated successfully",
-                severity: "success"
-            });
-            navigate(`/profile/${currentUser.username}`)
-        } catch (err) {
-            setMessage({ text: err.response?.data?.message, severity: "error" })
-        } finally {
-            setIsSaving(false)
-        }
-    };
     const isOwnerProfile = profile?._id === currentUser?._id
 
 
     if (!profile || loading) return <ProfileSkeleton />
 
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
-    }
 
 
     const handleSwitch = () => {
@@ -254,7 +190,7 @@ export default function ProfileDetails({ profile, username, setProfile }) {
                             required
                         />
                     </Box>
-                    <TextField
+                    {/* <TextField
                         id="outlined-multiline-flexible"
                         label="Shipping"
                         name="shippingAddress"
@@ -264,7 +200,7 @@ export default function ProfileDetails({ profile, username, setProfile }) {
                         value={formData.shippingAddress}
                         onChange={handleChange}
                     />
-
+ */}
 
 
                     <Button
@@ -339,7 +275,7 @@ export default function ProfileDetails({ profile, username, setProfile }) {
                         </Box>
                     </Box>
 
-                    <Card sx={{ minWidth: 275 }}>
+                    {/* <Card sx={{ minWidth: 275 }}>
                         <CardContent>
                             <Typography gutterBottom sx={{
                                 color: 'text.secondary', fontSize: {
@@ -361,7 +297,7 @@ export default function ProfileDetails({ profile, username, setProfile }) {
 
                         </CardContent>
 
-                    </Card>
+                    </Card> */}
 
                 </>
             )

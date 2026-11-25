@@ -10,7 +10,7 @@ module.exports.findUser = async (req, res) => {
             message: 'user not found'
         })
     }
-    console.log('gets here')
+    // console.log('gets here')
     res.json(user)
 }
 
