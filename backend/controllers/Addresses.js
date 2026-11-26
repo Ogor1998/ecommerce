@@ -54,3 +54,31 @@ module.exports.deleteAddress = async (req, res) => {
     })
 
 }
+
+
+module.exports.defaultAddress = async (req, res) => {
+    const { addressId } = req.params;
+    console.log('this is addressId', addressId)
+    // const updateUser = await User.findOneAndUpdate({ username: req.user.username },
+    //     { $in: { shippingAddress: { _id: addressId, main: !main } } },
+    //     { returnDocument: 'after' })
+    const user = await User.findOne({ username: req.user.username })
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        })
+    }
+
+    const targetAddress = user.shippingAddress.id(addressId)
+    if (!targetAddress) {
+        return res.status(404).json({ message: 'Address not found' });
+    }
+    user.shippingAddress.forEach(address => {
+        address.main = address._id.toString() === addressId
+    })
+    await user.save()
+    res.json({
+        message: 'Default address updated',
+        user
+    })
+}

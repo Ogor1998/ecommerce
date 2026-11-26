@@ -30,6 +30,7 @@ module.exports.register = async (req, res) => {
 
 
 module.exports.login = async (req, res) => {
+    // let triesCount
     const { username, password } = req.body;
     const user = await User.findOne({ username })
     if (!user) {
@@ -42,7 +43,7 @@ module.exports.login = async (req, res) => {
     if (!isMatch) {
         return res.status(401).json({
             message: 'Invalid Credentials',
-            isLoggedIn: false
+            isLoggedIn: false,
         })
     }
     console.log('this is user', user)

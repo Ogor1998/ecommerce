@@ -1,5 +1,5 @@
 // import React, { useState } from 'react'
-import { Box, Button, TextField, Typography, Grid, Divider } from '@mui/material'
+import { Box, Button, TextField, Typography, Grid, Divider, CircularProgress } from '@mui/material'
 import { AddressComponent } from './AddressComponent'
 import { useState } from 'react'
 import { CitySelect, StateSelect } from "react-country-state-city";
@@ -7,6 +7,7 @@ import "react-country-state-city/dist/react-country-state-city.css";
 import { addUserAddress } from '../../api/addresses';
 import { useProfile } from '../../context/ProfileContext';
 import { useNotification } from '../../context/NotificationContext';
+import SaveIcon from '@mui/icons-material/Save';
 
 
 const SavedAddresses = () => {
@@ -18,9 +19,10 @@ const SavedAddresses = () => {
         title: '',
         lineOne: '',
         lineTwo: '',
-        city: cityValue,
-        state: stateValue
+        city: '',
+        state: ''
     })
+    const [isSaving, setIsSaving] = useState(false)
 
     console.log('this is cityValue', cityValue)
     console.log('this is stateValue', stateValue)
@@ -38,16 +40,21 @@ const SavedAddresses = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setIsSaving(true)
         try {
-            console.log('THIS IS FORMDATA', formData)
             const res = await addUserAddress(formData)
-
             setProfile(res.data)
+            setFormData({ title: '', lineOne: '', lineTwo: '', city: '', state: '' });
+            setStateId(0);
+            setIsNewAddress(false);
+            setMessage({ text: 'Address added successfully', severity: 'success' });
         } catch (err) {
             setMessage({
                 text: err?.response?.data?.message,
                 severity: 'succes'
             })
+        } finally {
+            setIsSaving(false)
         }
     }
 
@@ -76,60 +83,99 @@ const SavedAddresses = () => {
             {isNewAddress && (
                 // <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 
-                <Grid container
-                    component='form'
+                <Grid
+                    container
+                    component="form"
                     onSubmit={handleSubmit}
                     rowSpacing={2}
-                    columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                    <TextField
-                        fullWidth
-                        size="small"
-                        label="Title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        required
-                    />
-                    <Grid size={6}>
+                    columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                >
+                    {/* Row 1: Title takes the full width (12 columns) */}
+                    <Grid size={12}>
+                        <Typography variant="body2" fontWeight={500} mb={0.5} component="label" htmlFor="title-input">
+                            Title *
+                        </Typography>
                         <TextField
+                            id="title-input"
                             fullWidth
                             size="small"
-                            label="line one"
+                            name="title"
+                            value={formData.title}
+                            onChange={handleChange}
+                            required
+                        />
+                    </Grid>
+
+                    {/* Row 2: Line One & Line Two (6 columns each) */}
+                    <Grid size={6}>
+                        <Typography variant="body2" fontWeight={500} mb={0.5} component="label" htmlFor="lineOne-input">
+                            Line One *
+                        </Typography>
+                        <TextField
+                            id="lineOne-input"
+                            fullWidth
+                            size="small"
                             name="lineOne"
-                            type='address'
+                            type="text"
                             value={formData.lineOne}
                             onChange={handleChange}
                             required
                         />
-
                     </Grid>
+
                     <Grid size={6}>
+                        <Typography variant="body2" fontWeight={500} mb={0.5} component="label" htmlFor="lineTwo-input">
+                            Line Two
+                        </Typography>
                         <TextField
+                            id="lineTwo-input"
                             fullWidth
                             size="small"
-                            label="line two"
                             name="lineTwo"
                             value={formData.lineTwo}
                             onChange={handleChange}
-
                         />
+                    </Grid>
 
+                    {/* Row 3: State & City (6 columns each) */}
+                    <Grid size={6}>
+                        <StateSelect
+                            countryid={161}
+                            onChange={(e) => {
+                                setStateId(e.id);
+                                setStateValue(e.name);
+                                setFormData(prev => ({ ...prev, state: e.name }))
+                            }}
+                            placeHolder="Select State"
+                        />
                     </Grid>
 
                     <Grid size={6}>
-                        <StateSelect countryid={161} onChange={(e) => {
-                            setStateId(e.id)
-                            setStateValue(e.name)
-                        }}
-                            placeHolder="Select State" />
+                        <CitySelect
+                            countryid={161}
+                            stateid={stateId}
+                            onChange={(e) => {
+                                setCityValue(e.name)
+                                setFormData(prev => ({ ...prev, city: e.name }))
+                            }}
+                            placeHolder="Select City"
+                        />
+                    </Grid>
 
+                    {/* Row 4: Full-width Submit Button */}
+                    <Grid size={12}>
+                        <Button type="submit"
+                            disabled={isSaving}
+                            variant="contained"
+                            startIcon={
+                                isSaving ? <CircularProgress /> : <SaveIcon />
+                            }
+                            fullWidth>
+                            {isSaving ? 'Adding address' : 'Add address'}
+                        </Button>
                     </Grid>
-                    <Grid size={6}>
-                        <CitySelect countryid={161} stateid={stateId} onChange={(e) => setCityValue(e.name)}
-                            placeHolder="Select City" />
-                    </Grid>
-                    <Button type='submit' variant='contained' fullWidth>Add address</Button>
                 </Grid>
+
 
 
                 // </Box>

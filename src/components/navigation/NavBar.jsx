@@ -29,6 +29,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useProfile } from '../../context/ProfileContext';
 import Cart from '../cart/Cart';
 
 const navLinks = [
@@ -39,9 +40,11 @@ const navLinks = [
 const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
+    const { profile } = useProfile()
     const { cart } = useCart();
     const { currentUser, logout } = useAuth() || {};
+
+    // console.log(currentUser)
 
     const [showCart, setShowCart] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -71,6 +74,7 @@ const Navbar = () => {
         if (logout) await logout();
         navigate('/login');
     };
+    const isAdmin = profile?.role === 'admin'
 
     return (
         <>
@@ -106,11 +110,12 @@ const Navbar = () => {
                                 fontWeight: 800,
                                 letterSpacing: '-0.03em',
                                 textDecoration: 'none',
-                                color: 'primary.main',
+                                color: isAdmin ? 'primary.light' : 'primary.main',
+
                                 mr: { md: 2 },
                             }}
                         >
-                            STOREFRONT
+                            {isAdmin ? <span style={{ color: '#c1121f' }}>STOREFRONT[admin]</span> : 'STOREFRONT'}
                         </Typography>
 
                         {/* Desktop Navigation Links */}
@@ -223,7 +228,7 @@ const Navbar = () => {
                                         {currentUser.username || currentUser.email}
                                     </MenuItem>
                                     <Divider />
-                                    {currentUser.isAdmin && (
+                                    {isAdmin && (
                                         <MenuItem
                                             onClick={() => {
                                                 handleMenuClose();

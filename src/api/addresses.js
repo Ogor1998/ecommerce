@@ -9,3 +9,6 @@ export const addUserAddress = (form) => {
 export const deleteUserAddress = (id) => {
     return api.delete(`/addresses/${id}`)
 }
+export const changeDefaultAddress = (id) => {
+    return api.patch(`/addresses/${id}`)
+}

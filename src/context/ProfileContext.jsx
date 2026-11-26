@@ -18,8 +18,15 @@ export function ProfileProvider({ children }) {
     const [isSaving, setIsSaving] = useState(false)
     const navigate = useNavigate()
 
-    console.log('gets here')
+
+
     useEffect(() => {
+        if (!currentUser) {
+            setProfile(null);
+            setIsLoading(false);
+            return;
+        }
+
         const fetchProfile = async () => {
             setIsLoading(true)
             try {

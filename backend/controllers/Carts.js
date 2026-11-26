@@ -84,7 +84,7 @@ module.exports.deleteFromCart = async (req, res) => {
         })
     }
     res.json({
-        message: 'Item removed this cart item',
+        message: 'Item removed this cart',
         cart
     })
     console.log('item removed')

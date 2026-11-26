@@ -9,7 +9,7 @@ const { catchAsync } = require('../utils/catchAsync')
 
 router.post('/login', catchAsync(login))
 router.post('/register', catchAsync(register))
-router.get('/admin', isLoggedIn, isAdmin, catchAsync(register))
+// router.get('/admin', isLoggedIn, isAdmin, catchAsync(register))
 
 
 

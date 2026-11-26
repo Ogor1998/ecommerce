@@ -11,7 +11,7 @@ import './Login.css'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { NavLink } from "react-router-dom"
 import { useSearchParams } from "react-router-dom"
-
+import { login } from "../api/users"
 
 
 export default function Login() {
@@ -30,14 +30,15 @@ export default function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!message.text) {
+        if (location.state?.message) {
             setMessage({
-                text: location.state?.message,
+                text: location.state.message,
                 severity: "error",
             });
+            // Clear location.state so refreshing doesn't re-trigger the alert
+            navigate(location.pathname, { replace: true, state: {} });
         }
-
-    }, [location.state, setMessage])
+    }, [location.state]);
 
     const isLockedOut = triesCount === 0
     useEffect(() => {
@@ -55,7 +56,7 @@ export default function Login() {
     }, [isLockedOut])
 
     useEffect(() => {
-        if (searchParams.get('expired',)) {
+        if (searchParams.get('expired')) {
             setMessage({
                 text: 'Your session expired... Please login again',
                 severity: 'warning'
@@ -76,7 +77,7 @@ export default function Login() {
 
     const validate = () => {
         let next = {}
-        if (formData.username < 3) next.username = 'Username must be at least 3 Characters'
+        if (formData.username.trim().length < 3) next.username = 'Username must be at least 3 Characters'
         if (formData.username === '' || formData.username === '') next.username = 'Username cannot be empty'
         if (formData.password === '') next.password = 'Password cannot be empty'
         setErrors(next)
@@ -86,7 +87,7 @@ export default function Login() {
         e.preventDefault();
         if (!validate()) return
         try {
-            const res = await axios.post('/login', formData, { withCredentials: true })
+            const res = await login(formData)
             if (res.data?.isLoggedIn || res.data?.user) {
                 setIsLoggedIn(true)
                 setCurrentUser(res.data.user)
@@ -108,7 +109,7 @@ export default function Login() {
             const status = err.response?.status;
 
             if (status === 401 || status === 400) {
-                setIsHidden(true);
+
                 setTriesCount(prev => Math.max(0, prev - 1));
 
                 setMessage({
