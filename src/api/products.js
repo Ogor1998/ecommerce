@@ -6,6 +6,10 @@ export const fetchProducts = (specs = {}) => {
     const params = specs.params ?? specs
     return api.get('/products', { params })
 }
+export const filterProducts = (specs = {}) => {
+    const params = specs.params ?? specs
+    return api.get('/products/filter', { params })
+}
 export const fetchProduct = (slug) => {
     return api.get(`/products/${slug}`)
 }

@@ -26,12 +26,45 @@ module.exports.allProducts = async (req, res) => {
         Product.countDocuments(filter),
     ])
 
+    if (!products) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+
     res.json({
         products,
         total,
         totalPages: Math.ceil(total / limit),
         pagination: { hasMore: skip + products.length < total },
     })
+}
+
+
+module.exports.filterProducts = async (req, res) => {
+    const { page = 1, limit = 6, status } = req.query;
+
+    const filter = {};
+    // ... your existing q / category filters
+
+    if (status === 'in_stock') {
+        filter.stock = { $gte: 10 };
+    } else if (status === 'low_stock') {
+        filter.stock = { $gt: 0, $lt: 10 };
+    } else if (status === 'out_of_stock') {
+        filter.stock = 0;
+    }
+
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / Number(limit));
+
+    const products = await Product.find(filter)
+        .skip((Number(page) - 1) * Number(limit))
+        .limit(Number(limit));
+
+    if (!products) {
+        return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json({ products, totalPages, totalProducts });
 }
 
 

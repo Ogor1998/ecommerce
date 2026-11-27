@@ -84,6 +84,16 @@ app.all(/(.*)/, (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
+    console.error('CRASHING ROUTE:', req.method, req.originalUrl, err.message);
+    if (res.headersSent) {
+        return next(err);
+    }
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({
+        message: err.message || 'Internal Server Error',
+    });
+});
+app.use((err, req, res, next) => {
 
     console.error(err); // ← log full error server-side for debugging
 

@@ -46,7 +46,7 @@ export function ProfileProvider({ children }) {
         fetchProfile();
     }, [currentUser])
 
-    console.log(profile)
+
 
 
     useEffect(() => {

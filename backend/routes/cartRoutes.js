@@ -7,8 +7,8 @@ const { isLoggedIn } = require('../middleware/auth');
 
 
 
-router.post('/:productId', isLoggedIn, catchAsync(addTocart))
 router.get('/', isLoggedIn, catchAsync(userCart))
+router.post('/:productId', isLoggedIn, catchAsync(addTocart))
 router.patch('/:productId', isLoggedIn, catchAsync(updateQuantity))
 router.delete('/:productId', isLoggedIn, catchAsync(deleteFromCart))
 
