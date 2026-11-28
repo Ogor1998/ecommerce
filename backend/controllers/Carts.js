@@ -92,11 +92,11 @@ module.exports.deleteFromCart = async (req, res) => {
 
 module.exports.userCart = async (req, res) => {
     const cart = await Cart.findOne({ user: req.user.userId }).populate('items.product');
-    if (!cart) {
-        return res.status(404).json({
-            message: 'Your cart is currently empty'
-        })
-    }
+    // if (!cart) {
+    //     return res.status(404).json({
+    //         message: 'Your cart is currently empty'
+    //     })
+    // }
     // console.log(cart.items)
     res.json(cart)
 }

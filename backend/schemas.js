@@ -8,7 +8,10 @@ module.exports.productSchema = Joi.object({
     description: Joi.string(),
     price: Joi.number(),
     category: Joi.string(),
-    stock: Joi.number()
+    stock: Joi.number(),
+    images: Joi.array().items(Joi.any()).optional(),
+    isActive: Joi.boolean().default(true)
+
 })
 
 

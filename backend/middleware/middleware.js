@@ -21,19 +21,21 @@ module.exports.isAdmin = async (req, res) => {
 module.exports.validateProduct = async (req, res, next) => {
     const { error } = productSchema.validate(req.body)
     if (error) {
-        const msg = error.details.map(el => el.message.join(','))
+        const msg = error.details.map(el => el.message).join(',')
         throw new AppError(msg, 400)
     } else {
         next()
     }
 }
 
-module.exports.validateUser = async (req, res, next) => {
+
+module.exports.validateUser = (req, res, next) => {
     const { error } = userSchema.validate(req.body)
     if (error) {
-        const msg = error.details.map(el => el.message.join(','))
+        const msg = error.details.map(el => el.message).join(',')
         throw new AppError(msg, 400)
     } else {
-        next()
+        next();
     }
 }
+

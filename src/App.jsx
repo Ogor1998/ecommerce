@@ -16,6 +16,8 @@ import ProfileDrawer from './components/common/ProfileDrawer'
 import AdminDrawer from './components/admin/AdminDrawer'
 import SavedAddresses from './components/address/SavedAddresses'
 import AdminOverview from './components/admin/AdminOverview'
+import AdminProducts from './components/admin/AdminProducts'
+import ProductForm from './components/admin/ProductForm'
 
 // import { Box, Fab, ShoppingBagIcon } from '@mui/material'
 
@@ -39,11 +41,11 @@ function App() {
         </Route>
         <Route path="/admin" element={<AdminDrawer />}>
           <Route index element={<AdminOverview />} />
-          {/* <Route path="products" element={<AdminProducts />} />
+          <Route path="products" element={<AdminProducts />} />
           <Route path="products/new" element={<ProductForm />} />
-          <Route path="products/:slug/edit" element={<ProductForm />} />
+          {/* <Route path="products/:slug/edit" element={<ProductForm />} />
           <Route path="orders" element={<AdminOrders />} />
-          <Route path="customers" element={<AdminCustomers />} />  */}
+          <Route path="customers" element={<AdminCustomers />} />    */}
         </Route>
 
         <Route path='/login' element={<Login />} />

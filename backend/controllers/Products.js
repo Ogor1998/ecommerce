@@ -40,10 +40,17 @@ module.exports.allProducts = async (req, res) => {
 
 
 module.exports.filterProducts = async (req, res) => {
-    const { page = 1, limit = 6, status } = req.query;
+    const { q, category, page = 1, limit = 6, status } = req.query;
 
-    const filter = {};
+    // const filter = {};
+    const filter = { isActive: true }
+    const sort = SORTS[req.query.sort] || SORTS['-createdAt']
     // ... your existing q / category filters
+
+    if (q) filter.name = { $regex: escapeRegex(String(q)), $options: 'i' }
+    if (category) {
+        filter.category = String(category)
+    }
 
     if (status === 'in_stock') {
         filter.stock = { $gte: 10 };
@@ -51,12 +58,15 @@ module.exports.filterProducts = async (req, res) => {
         filter.stock = { $gt: 0, $lt: 10 };
     } else if (status === 'out_of_stock') {
         filter.stock = 0;
+    } else if (status === 'inactive_products') {
+        filter.isActive = false
     }
 
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / Number(limit));
 
     const products = await Product.find(filter)
+        .sort({ ...sort, _id: -1 })
         .skip((Number(page) - 1) * Number(limit))
         .limit(Number(limit));
 
@@ -89,6 +99,8 @@ module.exports.allCategories = async (req, res) => {
 
 module.exports.createProduct = async (req, res) => {
     const { name, slug, category, price, description, stock, isActive } = req.body;
+
+    console.log('BODY:', req.body, 'FILES:', req.files)
     const product = new Product({
         name,
         slug,
@@ -142,7 +154,7 @@ module.exports.softDeleteProduct = async (req, res) => {
     const product = await Product.findById(id);
     product.isActive = !product.isActive
     await product.save()
-
+    console.log(product)
     res.json({
         message: 'Product temporary deleted',
         product

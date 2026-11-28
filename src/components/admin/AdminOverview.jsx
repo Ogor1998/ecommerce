@@ -28,6 +28,7 @@ const AdminOverview = () => {
                 height: '100vh', // Takes up the full screen height
                 p: 2,
                 gap: 2,
+                width: '100%',
                 boxSizing: 'border-box',
             }}
         >
@@ -36,7 +37,7 @@ const AdminOverview = () => {
                     height: '100%',
                     p: 2,
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
                     // alignItems: 'center',
                     // justifyContent: 'center',
                 }}
@@ -45,9 +46,22 @@ const AdminOverview = () => {
                 <Grid container spacing={2}>
                     {/* <Paper sx={{ p: 2, display: 'flex', width: '100%' }}> */}
                     {topItems.map((item) => (
-                        <Grid key={item} size={3} sx={{ gap: '16px', padding: '20px' }}>
-                            <Typography sx={{ fontWeight: '400', fontSize: '13px', color: '#6B7280' }}>{item.title}</Typography>
-                            <Typography sx={{ fontSize: '28px', fontWeight: '700' }}> {item.value}</Typography>
+                        <Grid key={item} size={3} sx={{ gap: '16px', padding: '20px', alignItems: 'center' }}>
+                            <Typography sx={{
+                                fontWeight: '400', fontSize:
+                                {
+                                    xs: '0.75rem',
+                                    md: '0.9rem'
+                                },
+                                color: '#6B7280'
+                            }}>{item.title}</Typography>
+                            <Typography sx={{
+                                fontSize: '28px', fontWeight: '700', fontSize:
+                                {
+                                    xs: '1.25rem',
+                                    md: '1.75rem'
+                                }
+                            }}> {item.value}</Typography>
                         </Grid>
                     ))}
 

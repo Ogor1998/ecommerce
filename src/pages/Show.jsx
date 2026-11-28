@@ -64,8 +64,8 @@ const Show = () => {
             }
         }
         fetchData();
-    }, [])
-    console.log('thsi is product', product)
+    }, [slug])
+    console.log('thsi is product', product.images)
 
     // const [count, setCount] = useState(product.quantity)
 
@@ -85,6 +85,7 @@ const Show = () => {
             setAdding(false)
         }
     }
+    console.log(product)
 
 
     return (

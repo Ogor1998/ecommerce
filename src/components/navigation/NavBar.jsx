@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import {
     AppBar,
@@ -45,6 +45,12 @@ const Navbar = () => {
     const { currentUser, logout } = useAuth() || {};
 
     // console.log(currentUser)
+
+    useEffect(() => {
+        if (!currentUser) {
+            return
+        }
+    }, [currentUser])
 
     const [showCart, setShowCart] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -246,6 +252,14 @@ const Navbar = () => {
                                     >
                                         My Orders
                                     </MenuItem>
+                                    {profile?.role === 'admin' && <MenuItem
+                                        onClick={() => {
+                                            handleMenuClose();
+                                            navigate('/admin');
+                                        }}
+                                    >
+                                        Admin Dashboard
+                                    </MenuItem>}
                                     <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
                                         Logout
                                     </MenuItem>

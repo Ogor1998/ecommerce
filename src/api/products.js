@@ -15,12 +15,12 @@ export const fetchProduct = (slug) => {
 }
 export const fetchCategories = () => api.get('/products/categories')
 export const newProduct = (specs) => {
-    return api.post('/products/new', { specs })
+    return api.post('/products/new', specs)
 }
 export const updateProduct = (productId, specs) => {
-    return api.patch(`/update/${productId}`, { specs })
+    return api.patch(`/update/${productId}`, specs)
 }
 
 export const deleteProduct = (productId) => {
-    return api.post(`/delete/${productId}`)
+    return api.patch(`/products/delete/${productId}`)
 }
